@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#285ce5">
+  <meta name="description" content="Roulette latihan tanya jawab reviewer PKM-KC OSTOSENSE. Pilih bidang, jawab pertanyaan, dan buka contoh jawaban.">
+  <title>OSTOSENSE — Ruang latihan reviewer</title>
+  <style>
+    :root { --paper:#f1f5fb; --white:#fff; --ink:#17243b; --muted:#607089; --line:#dbe3ee; --blue:#285ce5; --deep:#183b92; --soft:#eaf0ff; --teal:#2f827c; --display:"Bahnschrift","Segoe UI",sans-serif; --body:"Segoe UI",Arial,sans-serif; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none!important; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    button,input,select { font:inherit; }
+    button,a,input,select,summary { -webkit-tap-highlight-color:transparent; }
+    button { cursor:pointer; }
+    button:disabled { cursor:default; opacity:.55; }
+    :focus-visible { outline:3px solid #cf6b36; outline-offset:4px; }
+    a { color:var(--blue); }
+    .app { max-width:1280px; margin:0 auto; padding:0 40px 40px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:88px; border-bottom:1px solid var(--line); }
+    .brand { display:flex; gap:12px; align-items:center; font-family:var(--display); font-weight:700; font-size:20px; letter-spacing:.025em; }
+    .brand-mark { width:33px; height:33px; border:2px solid var(--blue); border-radius:50%; position:relative; }
+    .brand-mark::before,.brand-mark::after { content:""; position:absolute; border:2px solid var(--blue); border-radius:50%; inset:5px; }
+    .brand-mark::after { inset:11px; background:var(--blue); border:0; }
+    .top-note { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
+    .status-dot { height:7px; width:7px; border-radius:50%; background:var(--teal); }
+    .intro { display:flex; justify-content:space-between; align-items:end; gap:30px; padding:34px 0 28px; }
+    h1 { font:600 clamp(28px,3.3vw,42px)/1.17 var(--display); letter-spacing:-.035em; margin:0 0 10px; }
+    .intro p { color:var(--muted); margin:0; max-width:700px; }
+    .text-button { border:0; background:transparent; padding:8px 0; color:var(--muted); font-size:14px; white-space:nowrap; }
+    .text-button:hover { color:var(--blue); }
+    .filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:25px; }
+    .filter { border:1px solid var(--line); padding:7px 12px; border-radius:8px; background:var(--white); color:var(--muted); font-size:13px; display:flex; align-items:center; gap:7px; }
+    .filter[aria-pressed="true"] { background:var(--ink); color:white; border-color:var(--ink); }
+    .filter:hover { border-color:#9babc1; }
+    .filter-count { font-size:11px; opacity:.8; }
+    .filter-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .workspace { display:grid; grid-template-columns:350px minmax(0,1fr); gap:24px; align-items:start; }
+    .roulette { background:var(--white); border:1px solid var(--line); border-radius:16px; padding:22px; }
+    .panel-label { display:flex; align-items:center; justify-content:space-between; margin-bottom:17px; font-size:14px; font-weight:600; }
+    .remaining { font-size:12px; color:var(--muted); font-weight:400; }
+    .wheel { width:100%; aspect-ratio:1; position:relative; margin:4px auto 21px; }
+    .wheel svg { width:100%; height:100%; overflow:visible; }
+    #wheel-disk { transform-origin:160px 160px; }
+    .pointer { position:absolute; top:-7px; left:50%; width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:23px solid var(--ink); transform:translateX(-50%); z-index:2; filter:drop-shadow(0 2px 1px #fff); }
+    .wheel-center { position:absolute; inset:36%; border-radius:50%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; box-shadow:0 3px 15px #20365b20; font-size:10px; color:var(--muted); line-height:1.5; pointer-events:none; }
+    .wheel-center strong { color:var(--ink); font:600 21px var(--display); }
+    .primary { display:flex; justify-content:center; align-items:center; gap:10px; background:var(--blue); color:white; border:1px solid var(--blue); border-radius:9px; min-height:48px; font-weight:600; padding:11px 18px; }
+    .primary:hover:not(:disabled) { background:var(--deep); border-color:var(--deep); }
+    #spin { width:100%; }
+    .spin-icon { font-size:21px; line-height:1; }
+    .wheel-note { color:var(--muted); font-size:12px; text-align:center; margin:11px 0 22px; }
+    .session-progress { border-top:1px solid var(--line); padding-top:18px; }
+    .progress-label { display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; }
+    .progress-label span:last-child { color:var(--muted); }
+    progress { width:100%; height:5px; display:block; border:0; border-radius:10px; overflow:hidden; background:var(--soft); accent-color:var(--blue); }
+    progress::-webkit-progress-bar { background:var(--soft); }
+    progress::-webkit-progress-value { background:var(--blue); border-radius:10px; }
+    progress::-moz-progress-bar { background:var(--blue); }
+    .timer-settings { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:19px; font-size:13px; color:var(--muted); }
+    select { background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:7px; padding:6px 9px; }
+    .stage { background:white; border:1px solid var(--line); border-radius:16px; overflow:hidden; min-height:534px; }
+    .stage-top { display:flex; justify-content:space-between; align-items:center; gap:15px; padding:17px 25px; border-bottom:1px solid var(--line); min-height:67px; }
+    .tag { display:inline-flex; align-items:center; gap:7px; color:var(--blue); font-size:13px; font-weight:600; }
+    .tag::before { content:""; width:7px; height:7px; background:currentColor; border-radius:50%; }
+    .question-id { color:var(--muted); font-size:12px; margin-left:8px; }
+    .timer { display:flex; gap:9px; align-items:center; color:var(--muted); }
+    .time-value { font-variant-numeric:tabular-nums; font-size:16px; }
+    .timer.expired { color:#b3472a; }
+    .icon-button { border:1px solid var(--line); width:29px; height:29px; border-radius:6px; color:var(--muted); background:white; font-size:12px; padding:0; }
+    .idle { padding:58px 36px; max-width:540px; }
+    .idle-symbol { width:45px; height:45px; display:grid; place-items:center; color:var(--blue); background:var(--soft); border-radius:12px; font:600 25px var(--display); margin-bottom:23px; }
+    .idle h2 { font:600 28px/1.25 var(--display); letter-spacing:-.02em; margin:0 0 14px; }
+    .idle p { color:var(--muted); margin:0; font-size:15px; }
+    .idle .idle-hint { font-size:12px; margin-top:35px; }
+    .question-content { padding:27px 28px; }
+    .question-title { font:500 15px var(--display); color:var(--muted); margin:0 0 14px; }
+    .question-text { font:500 clamp(19px,1.8vw,23px)/1.65 var(--body); margin:0; max-width:65ch; }
+    .answer-button { border:1px solid var(--blue); color:var(--blue); background:var(--soft); padding:10px 16px; border-radius:8px; font-weight:600; margin-top:25px; font-size:14px; }
+    .answer-button:hover { background:#dce6ff; }
+    .answer-panel { background:#f0f6f5; border-left:3px solid var(--teal); padding:21px 23px; margin-top:22px; border-radius:0 9px 9px 0; }
+    .answer-panel h3 { font-size:13px; font-weight:650; color:#276762; margin:0 0 10px; }
+    .answer-panel p { font-size:15px; margin:0; line-height:1.75; }
+    .follow-up { border-top:1px solid #cdddde; margin-top:19px; padding-top:16px; }
+    .follow-up h3 { color:var(--ink); }
+    .evidence { font-size:12px; margin-top:18px; color:var(--muted); }
+    summary { cursor:pointer; }
+    .evidence p { font-size:12px; padding-top:9px; }
+    .selected-note { color:var(--muted); font-size:12px; margin:20px 0 0; }
+    .bank { margin-top:30px; background:white; border:1px solid var(--line); border-radius:12px; }
+    .bank>summary { padding:20px 24px; display:flex; justify-content:space-between; align-items:center; gap:15px; list-style:none; }
+    .bank>summary::-webkit-details-marker { display:none; }
+    .bank>summary strong { font-weight:600; font-size:16px; }
+    .bank>summary .bank-count { font-size:12px; color:var(--muted); margin-left:9px; }
+    .bank-arrow { font-size:20px; color:var(--muted); }
+    .bank[open] .bank-arrow { transform:rotate(180deg); }
+    .bank-inner { padding:0 24px 24px; }
+    .search-wrap { display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line); padding:0 0 17px; }
+    input[type="search"] { background:var(--paper); width:100%; padding:11px 14px; border:1px solid var(--line); border-radius:8px; color:var(--ink); font-size:14px; }
+    .search-count { font-size:12px; color:var(--muted); white-space:nowrap; }
+    .bank-card { padding:23px 0; border-bottom:1px solid var(--line); }
+    .bank-card:last-child { border-bottom:0; padding-bottom:0; }
+    .bank-meta { display:flex; gap:12px; align-items:center; color:var(--muted); font-size:12px; margin-bottom:8px; }
+    .seen-label { color:var(--teal); }
+    .bank-card h3 { font-size:16px; font-weight:600; margin:0 0 6px; }
+    .bank-card>p { font-size:14px; color:#394a63; margin:0; max-width:90ch; }
+    .bank-actions { display:flex; gap:14px; align-items:center; margin-top:12px; }
+    .bank-actions .answer-button { margin:0; font-size:12px; padding:7px 10px; }
+    .bank-actions .text-button { font-size:12px; padding:7px 0; }
+    .empty-bank { padding:25px 0 0; font-size:14px; color:var(--muted); }
+    footer { display:flex; justify-content:space-between; align-items:start; gap:30px; color:var(--muted); margin-top:22px; font-size:12px; }
+    footer p { margin:0; max-width:760px; }
+    dialog { border:1px solid var(--line); padding:30px; border-radius:16px; max-width:420px; width:calc(100% - 35px); color:var(--ink); box-shadow:0 20px 80px #13244825; }
+    dialog::backdrop { background:#17243b65; }
+    dialog h2 { font:600 25px var(--display); margin:0 0 10px; }
+    dialog p { font-size:14px; color:var(--muted); }
+    .dialog-actions { display:flex; justify-content:flex-end; gap:18px; align-items:center; margin-top:24px; }
+    @media(min-width:1100px) { .roulette { position:sticky; top:22px; } }
+    @media(max-width:1000px) { .app { padding:0 24px 30px; } .workspace { grid-template-columns:300px minmax(0,1fr); gap:18px; } .roulette { padding:18px; } .question-content { padding:24px; } .question-text { font-size:20px; } .idle { padding:40px 26px; } }
+    @media(max-width:750px) { .app { padding:0 16px 25px; } .topbar { min-height:70px; } .brand { font-size:17px; } .top-note { font-size:12px; } .intro { padding:25px 0 23px; align-items:start; } .intro p { font-size:14px; } .intro .text-button { font-size:12px; } .filters { gap:7px; margin-bottom:19px; } .filter { font-size:12px; padding:7px 10px; } .workspace { grid-template-columns:1fr; } .roulette { display:grid; grid-template-columns:150px minmax(0,1fr); column-gap:18px; padding:20px; align-items:center; } .panel-label { grid-column:1/-1; } .wheel { grid-row:2/5; margin:0; } .wheel-note { margin:8px 0 0; font-size:11px; } .session-progress { grid-column:1/-1; margin-top:20px; } .timer-settings { grid-column:1/-1; margin-top:14px; } #spin { font-size:13px; min-height:45px; padding:8px; } .spin-icon { display:none; } .stage { min-height:350px; } .stage-top { padding:15px 20px; } .question-content { padding:24px 20px; } .question-text { font-size:19px; } .idle { padding:30px 24px; } .idle h2 { font-size:25px; } .idle .idle-hint { margin-top:20px; } .answer-panel { padding:18px; } .bank>summary { padding:17px 18px; } .bank-inner { padding:0 18px 20px; } footer { display:block; } footer span { display:block; margin-top:8px; } }
+    @media(max-width:750px) { .wheel-center strong { font-size:15px; } .wheel-center { font-size:7px; } }
+    @media(max-width:380px) { .roulette { grid-template-columns:125px minmax(0,1fr); gap:14px; padding:17px; } .top-note { max-width:85px; line-height:1.3; } .intro { flex-wrap:wrap; gap:6px; } .wheel-center strong { font-size:13px; } .wheel-center { font-size:6px; } .question-id { display:none; } .bank>summary .bank-count { display:block; margin:2px 0 0; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; } }
+    @media print { .roulette,.filters,.intro button,.timer,.bank-actions,footer,.top-note { display:none; } .workspace { display:block; } .stage { min-height:0; } .answer-panel { display:block!important; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>OSTOSENSE</div>
+      <span class="top-note"><span class="status-dot" aria-hidden="true"></span>Simulasi reviewer PKM-KC</span>
+    </header>
+    <section class="intro" aria-labelledby="page-title">
+      <div><h1 id="page-title">Giliran pertanyaan sulit.</h1><p>Latih jawabanmu dari sudut pandang reviewer. Putar, jawab, lalu buka pembahasannya.</p></div>
+      <button id="reset" class="text-button" type="button">Mulai sesi baru</button>
+    </section>
+    <div id="filters" class="filters" role="group" aria-label="Pilih bidang pertanyaan"></div>
+    <div class="workspace">
+      <aside class="roulette" aria-label="Roulette pertanyaan">
+        <div class="panel-label"><span>Putar bidang reviewer</span><span class="remaining" id="remaining"></span></div>
+        <div class="wheel" aria-hidden="true"><span class="pointer"></span><svg viewBox="0 0 320 320"><g id="wheel-disk"></g><circle cx="160" cy="160" r="155" fill="none" stroke="white" stroke-width="4"/></svg><div class="wheel-center"><strong>OSTO</strong><span>reviewer</span></div></div>
+        <button type="button" class="primary" id="spin"><span class="spin-icon" aria-hidden="true">↻</span><span id="spin-label">Putar pertanyaan</span></button>
+        <p class="wheel-note" id="wheel-note">Acak tanpa mengulang dalam satu sesi.</p>
+        <div class="session-progress"><div class="progress-label"><span>Progres latihan</span><span id="progress-text"></span></div><progress id="progress" value="0" max="61" aria-label="Pertanyaan yang sudah dilatih"></progress></div>
+        <div class="timer-settings"><label for="duration">Timer jawaban</label><select id="duration"><option value="0">Tanpa timer</option><option value="60">60 detik</option><option value="90" selected>90 detik</option><option value="120">120 detik</option></select></div>
+      </aside>
+      <section class="stage" id="stage" aria-label="Pertanyaan latihan" aria-busy="false">
+        <div class="stage-top"><div><span class="tag" id="current-category">Siap berlatih</span><span id="question-id" class="question-id"></span></div><div class="timer" id="timer" hidden><span id="time-value" class="time-value" role="timer">01:30</span><button class="icon-button" id="timer-toggle" type="button" aria-label="Jeda timer">Ⅱ</button></div></div>
+        <div class="idle" id="idle"><div class="idle-symbol" aria-hidden="true">?</div><h2>Satu pertanyaan.<br>Satu jawaban yang bisa dipertanggungjawabkan.</h2><p>Pilih bidang di atas atau biarkan semua bidang aktif. Roda akan memilih pertanyaan untuk sesi latihanmu.</p><p class="idle-hint">Coba jawab dengan suara keras sebelum membuka contoh jawaban.</p></div>
+        <article class="question-content" id="current" hidden>
+          <h2 class="question-title" id="question-title"></h2><p class="question-text" id="question-text"></p>
+          <button type="button" class="answer-button" id="reveal" aria-expanded="false" aria-controls="answer-panel">Lihat jawaban</button>
+          <div class="answer-panel" id="answer-panel" hidden><h3>Contoh jawaban</h3><p id="answer-text"></p><div class="follow-up"><h3>Kalau reviewer mengejar lagi…</h3><p id="follow-text"></p></div><details class="evidence"><summary>Rujukan & bukti yang perlu disiapkan</summary><p id="source-text"></p></details></div>
+          <p id="selected-note" class="selected-note"></p>
+        </article>
+      </section>
+    </div>
+    <details class="bank" id="bank"><summary><div><strong>Bank pertanyaan</strong><span class="bank-count" id="bank-count"></span></div><span class="bank-arrow" aria-hidden="true">⌄</span></summary><div class="bank-inner"><div class="search-wrap"><input type="search" id="search" aria-label="Cari pertanyaan" placeholder="Cari topik, misalnya LIG atau data simulasi…"><span class="search-count" id="search-count"></span></div><div id="bank-list"></div></div></details>
+    <footer><p>Contoh jawaban adalah bahan latihan. Sesuaikan dengan bukti tim; rujukan pada kartu adalah petunjuk pengecekan, bukan konfirmasi semua klaim.</p><span>Progres tersimpan di browser ini.</span></footer>
+  </main>
+  <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">Mulai sesi baru?</h2><p>Riwayat pertanyaan di sesi ini akan dikosongkan. Semua pertanyaan dapat muncul kembali.</p><div class="dialog-actions"><button id="cancel-reset" type="button" class="text-button">Lanjutkan sesi</button><button id="confirm-reset" type="button" class="primary">Mulai sesi baru</button></div></dialog>
+  <p id="announcement" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap"></p>
+  <script>
+    'use strict';
+    const questions = [{"id":1,"category":"AI","title":"Akurasi siapa?","question":"Anda menonjolkan akurasi 94,74%. Berapa dari 38 window itu berasal dari pasien nyata? Jika semuanya terprogram, atas dasar apa angka tersebut digunakan untuk menggambarkan keandalan alat?","answer":"Angka 94,74% adalah hasil validasi komputasional pada data terprogram: 36 dari 38 window benar. Rekaman sensor nyata digunakan untuk karakterisasi, sedangkan dua pasien untuk observasi fungsi. Ketiganya merupakan jenis bukti yang berbeda.","follow":"Tunjukkan satu tabel yang memisahkan data nyata, data model, dan uji pasien.","source":"LA §4.1.2–4.1.3; Artikel abstrak dan evaluasi OLR; Sumber 2"},{"id":2,"category":"AI","title":"Dasar simulasi","question":"Jika pola dan label kalian buat sendiri, bukankah AI hanya belajar aturan buatan kalian? Dari pengukuran atau literatur mana besaran sinyal, noise, dan waktu kebocorannya ditentukan?","answer":"Generator menggunakan pola stabil, kenaikan bertahap, lonjakan mendadak, serta noise normal dengan seed tetap. Parameter sinyal diklasifikasikan sebagai nilai uji rekayasa, bukan hasil kalibrasi fisiologis. Evaluasi ini membuktikan alur komputasi pada skenario tersebut; generalisasi memerlukan data nyata berlabel.","follow":"Apakah ada parameter generator yang benar-benar diturunkan dari sensor pasien?","source":"Repo synthetic.py dan synthetic-v0.3.json; Sumber 1–2"},{"id":3,"category":"AI","title":"Software dan package","question":"Jangan hanya menjawab memakai AI. Software, package, dan algoritma apa yang benar-benar membuat data serta melatih model? Apa fungsi masing-masing?","answer":"Python digunakan untuk pipeline. NumPy membangkitkan sinyal dan noise; scikit-learn menyediakan StandardScaler dan model pembanding; mord.LogisticAT melatih OLR; SciPy mendukung perhitungan numerik; Matplotlib membuat grafik.","follow":"Mana yang membangkitkan data dan mana yang menentukan kelas?","source":"Repo ai/pyproject.toml, synthetic.py, training.py"},{"id":4,"category":"AI","title":"Satu dari tiga kanal","question":"Perangkat merekam tiga kanal kapasitif. Mengapa evaluasi AI hanya memakai satu? Mana bukti bahwa kanal tersebut paling informatif dan dua kanal lain tidak diperlukan?","answer":"Evaluasi yang dilaporkan memang dibatasi pada satu kanal dengan lima fitur. Pilihan ini adalah cakupan implementasi, bukan hasil pembuktian bahwa satu kanal paling unggul. Pembandingan satu kanal dan multikanal dengan partisi yang sama diperlukan untuk mengukur manfaat tambahannya.","follow":"Sebutkan lokasi fisik kanal AI dan tunjukkan pemetaan wiring-nya.","source":"LA §3.3.2; Artikel akuisisi dan evaluasi satu kanal"},{"id":5,"category":"AI","title":"LIG di luar model","question":"Judul membawa LIG dan AI, tetapi model tidak memakai resistansi LIG. Apakah judul kalian memberi kesan fusi AI yang sebenarnya tidak diuji?","answer":"Integrasi terjadi pada tingkat sistem: kapasitif memasok model ordinal, sementara resistif LIG menyediakan indikasi kontak cairan. Evaluasi yang ada tidak membuktikan model fusi multikanal. Respons resistif yang kurang konsisten juga perlu ditangani sebelum dipertimbangkan sebagai fitur tambahan.","follow":"Bagian mana yang melakukan fusi numerik? Tunjukkan persamaan atau kodenya.","source":"PPT slide 5; LA §3.2.1 dan §3.3.2; Artikel metode"},{"id":6,"category":"AI","title":"Tree justru menang","question":"Decision Tree benar 37 dari 38, sedangkan OLR hanya 36. Mengapa memilih model yang skornya lebih rendah? Jangan mengatakan Tree overfitting tanpa bukti.","answer":"OLR dipilih karena sesuai dengan urutan kelas dan implementasinya menggunakan lima koefisien serta tiga ambang. Tree memang memperoleh skor lebih tinggi pada validasi ini. Selisih satu window tidak cukup untuk menyimpulkan keunggulan generalisasi; pemilihan kami adalah keputusan desain, bukan kemenangan akurasi.","follow":"Sudahkah waktu inferensi dan penggunaan memori ketiganya dibandingkan pada board yang sama?","source":"Artikel hasil OLR; LA §4.1.3; Sumber 2"},{"id":7,"category":"AI","title":"Window bukan eksperimen","question":"Dengan window 120 detik bergeser 10 detik, sebagian besar sampel antarwindow sama. Apakah 38 window layak disebut 38 percobaan independen? Bagaimana mencegah data leakage?","answer":"Window bertumpang tindih sehingga tidak mewakili 38 percobaan independen. Pemisahan dilakukan per skenario/sesi, dan standardisasi hanya dipelajari dari Development. Ini mengurangi kebocoran antarpartisi, tetapi variasi skenario tetap terbatas.","follow":"Berapa sesi independen pada Validation, bukan berapa window?","source":"Artikel pengembangan model: 4 skenario Development, 2 Validation"},{"id":8,"category":"AI","title":"Urgent seratus persen","question":"Urgent memiliki recall 100%, tetapi hanya tiga window. Beranikah Anda menyebut sistem pasti menangkap keadaan mendesak? Bagaimana dengan dua Monitor yang salah menjadi Safe?","answer":"Seratus persen tersebut hanya berarti tiga window Urgent pada validasi ini terklasifikasi benar. Dua Monitor yang menjadi Safe menunjukkan risiko meremehkan kelas. Karena itu, hasil dibaca bersama support dan confusion matrix, bukan sebagai jaminan keamanan pada pasien.","follow":"Mengapa recall Monitor hanya 75% meski akurasi total tinggi?","source":"LA Tabel 4.2; Artikel Tabel 2"},{"id":9,"category":"AI","title":"Label waktu bukan diagnosis","question":"Artikel menetapkan batas 30, 90, dan 180 detik. Apakah ini batas medis, hasil pengukuran pasien, atau parameter buatan? Mengapa kelas tersebut layak disebut risiko?","answer":"Batas itu merupakan parameter evaluasi komputasional berdasarkan selisih waktu menuju kejadian dalam skenario. Empat kelas menyatakan urutan kedekatan kejadian pada skenario tersebut. Makna klinisnya memerlukan hubungan dengan kejadian nyata yang terverifikasi.","follow":"Siapa yang menetapkan ground truth kebocoran pada rekaman nyata?","source":"Artikel pengembangan dan evaluasi model"},{"id":10,"category":"AI","title":"Kebocoran mendadak hilang","question":"Generator memiliki skenario mendadak, tetapi artikel menyebut window skenario mendadak dikeluarkan dari evaluasi. Apakah akurasi kalian justru tidak mencakup kasus yang paling mendesak?","answer":"Benar, cakupan skor model adalah skenario stabil dan pengisian bertahap yang lolos aturan pelabelan. Keberadaan skenario mendadak pada generator tidak berarti skenario itu masuk angka akurasi. Kinerja terhadap kejadian mendadak harus dilaporkan terpisah.","follow":"Apa bukti jalur kontak cairan tetap memberi peringatan saat skenario itu terjadi?","source":"Artikel pengembangan model; Repo generator"},{"id":11,"category":"Kendali","title":"Dua menit untuk apa?","question":"Mengapa jendela 120 detik dipilih? Kalau cairan sudah mengenai kulit sebelum notifikasi, apa arti peringatan dini? Apakah Anda memiliki pengukuran waktu pendahuluan alarm?","answer":"Jendela 120 detik menyediakan riwayat untuk menghitung fitur dan diperbarui tiap 10 detik setelah tersedia. Itu tidak otomatis berarti setiap kejadian ditunda dua menit, tetapi juga tidak menjamin respons dalam 10 detik. Kecukupan harus dinilai dari waktu peringatan terhadap waktu kontak cairan pada pengujian nyata.","follow":"Bagaimana sistem berperilaku saat baru menyala dan riwayat 120 detik belum tersedia?","source":"LA §3.3.2; Artikel akuisisi; latihan percakapan"},{"id":12,"category":"Kendali","title":"Median bukan pengenal gerak","question":"Median meredam lonjakan, tetapi bagaimana membedakan gerak tubuh yang berlangsung lama dari pengisian kantong? Apakah window panjang justru menyimpan gangguan itu?","answer":"Median membantu menekan lonjakan singkat; window merangkum pola. Keduanya tidak secara langsung mengenali sumber gerakan. Rencana accelerometer memberi informasi gerak tambahan, lalu manfaatnya perlu diuji dengan aktivitas terkontrol dan kejadian pengisian.","follow":"Jika pasien berjalan dua menit penuh, fitur mana yang tetap dapat dipercaya?","source":"LA §3.4 dan §4.1.2; Sumber 1–2"},{"id":13,"category":"Kendali","title":"Sampling versus keputusan","question":"Anda menyebut real-time 10 Hz, tetapi AI mendapat ringkasan 1 Hz dan diperbarui 10 detik. Apakah istilah real-time menyembunyikan latensi aktual?","answer":"10 Hz adalah frekuensi akuisisi, 1 Hz frekuensi ringkasan, dan 10 detik interval pembaruan analisis. Latensi notifikasi juga mencakup pengolahan, komunikasi, dan tampilan. Ketiganya perlu dijelaskan terpisah dan diukur dari kejadian sampai notifikasi.","follow":"Tunjukkan timestamp sensor, inferensi, pengiriman, dan penerimaan aplikasi.","source":"LA §3.2.1–3.3.2; PPT slide 14"},{"id":14,"category":"Kendali","title":"Aman atau sensor mati?","question":"Ketika kabel terputus dan angka sensor rendah, bagaimana membedakannya dari kondisi Safe? Apakah nilai terakhir terus ditampilkan sehingga pasien merasa aman?","answer":"Status kualitas sensor dan koneksi harus dipisahkan dari kelas risiko. Data tidak valid tidak boleh diterjemahkan menjadi Safe. Antarmuka sudah dirancang memisahkan indikator tersebut; bukti perilaku nyata saat putus kabel perlu ditunjukkan melalui uji gangguan.","follow":"Saat data kedaluwarsa, berapa lama aplikasi masih menampilkan nilai terakhir?","source":"LA §4.1.4; Sumber 1 sesi gangguan; Artikel antarmuka"},{"id":15,"category":"Kendali","title":"Internet diputus","question":"Kalian menyebut offline-first. Jika saya matikan Wi-Fi sekarang, fungsi apa yang tetap berjalan dan apa yang berhenti? Jangan memakai uji C++ di laptop sebagai bukti firmware.","answer":"Arsitekturnya ditujukan untuk pengolahan lokal, sementara IoT membawa pemantauan jarak jauh. Bukti Python–C++ yang tersedia adalah paritas sisi-host. Klaim operasi offline pada perangkat harus ditopang demonstrasi board, pencatatan lokal, dan jalur notifikasi yang benar-benar aktif.","follow":"Lakukan uji putus koneksi, sambungkan kembali, lalu buktikan tidak ada data hilang atau ganda.","source":"PPT slide 11–14; LA §4.1.3; Artikel komunikasi"},{"id":16,"category":"Kendali","title":"Notifikasi berulang","question":"Jika kelas bolak-balik Monitor dan Caution tiap 10 detik, apakah pasien terus menerima notifikasi? Di mana aturan hysteresis, cooldown, atau konfirmasi berulangnya?","answer":"Klasifikasi dan kebijakan notifikasi adalah dua lapisan berbeda. Kami perlu menunjukkan aturan notifikasi yang benar-benar diterapkan; median dan window saja tidak membuktikan alarm sudah terkendali. Hysteresis atau cooldown dapat diuji sebagai penyempurnaan dengan tetap mengukur keterlambatan peringatan.","follow":"Berapa false notification per jam aktivitas, bukan akurasi per window?","source":"Sumber 1–2; LA §4.1.4; pertanyaan rancangan tambahan"},{"id":17,"category":"Kendali","title":"Closed-loop atau pemantauan?","question":"Anda menyebut cyber-physical dan kendali. Apa variabel terkendali, aktuator, set point, serta loop umpan baliknya? Bukankah perangkat hanya menampilkan sensor?","answer":"Fungsi prototipe adalah pemantauan dan dukungan keputusan. Tindakan fisik seperti mengosongkan kantong dilakukan pengguna. Istilah cyber-physical menjelaskan hubungan penginderaan fisik dan pengolahan digital; tidak berarti alat mengendalikan aliran feses secara otomatis.","follow":"Apa tindakan pengguna yang diharapkan untuk tiap tingkat risiko, dan siapa yang memvalidasinya?","source":"LA §4.1.1; PPT skema penggunaan"},{"id":18,"category":"Kendali","title":"Model dan pengaman bertentangan","question":"Jika AI menunjukkan Safe tetapi LIG membaca kontak cairan, informasi mana yang menang? Apakah label Safe masih tampil saat pengguna seharusnya memeriksa kantong?","answer":"AI dan kontak cairan harus ditampilkan sebagai informasi berbeda; indikasi kontak tidak boleh disembunyikan oleh kelas Safe. LA menyebut jalur ganda, tetapi urutan prioritas peringatan perlu dibuktikan dari implementasi dan diuji pada konflik sinyal.","follow":"Tunjukkan satu rekaman atau demonstrasi kondisi konflik tersebut.","source":"LA §3.2.1 dan §4.1.4"},{"id":19,"category":"Sensor","title":"Strain atau dielektrik?","question":"Catatan Anda menyebut sensor kantong membaca strain, sedangkan LA menjelaskan kontras dielektrik. Mekanisme mana yang sebenarnya diukur, dan bagaimana perubahan bentuk kantong dipisahkan dari perubahan isinya?","answer":"Dasar rancangan yang dijelaskan LA adalah perubahan kapasitansi akibat kondisi dielektrik. Geometri elektroda dan deformasi kantong juga dapat memengaruhi pembacaan. Karena pengaruh tersebut belum dipisahkan secara kuantitatif, keluaran dinyatakan sebagai indeks relatif.","follow":"Buat dua uji: bentuk berubah tanpa isi bertambah dan isi bertambah dengan geometri dijaga.","source":"Sumber 1; LA §2.2; Artikel fabrikasi"},{"id":20,"category":"Sensor","title":"Tiga kanal ada di mana?","question":"Anda mengatakan tiga kanal kapasitif di kantong, tetapi artikel menggambar kapasitif pada baseplate. Tunjukkan pemetaan Kap4, Kap5, Kap7 ke elektroda fisik. Mana yang masuk AI?","answer":"Rekaman membuktikan tiga kanal kapasitif dan dua resistif, sementara artikel secara eksplisit tidak mengatribusikan label kanal pada lokasi tertentu. Pemetaan harus dikunci melalui wiring dan uji kanal satu per satu. Nama kanal tidak cukup untuk memastikan posisi fisik.","follow":"Jika salah pemetaan, apakah interpretasi grafik dan klaim sensor juga berubah?","source":"Artikel arsitektur dan akuisisi; konflik dengan Sumber 1 dan percakapan"},{"id":21,"category":"Sensor","title":"Volume atau angka relatif?","question":"Pada slide sensor tertulis melihat volume kantong. Di mana kurva kalibrasi dalam mL dan galatnya? Apakah angka persen di aplikasi punya satuan fisik yang sah?","answer":"Hasil yang tersedia adalah perubahan pembacaan dan indeks pengisian relatif. Artikel dan LA menyebut hubungan dengan volume belum dikalibrasi. Klaim volume dalam mL memerlukan kalibrasi terhadap volume terukur pada beberapa posisi dan kondisi kantong.","follow":"Apakah indeks 80% berarti 440 mL pada kantong 550 mL? Buktikan.","source":"PPT slide 12; LA §4.1.2–4.1.4; Artikel fabrikasi"},{"id":22,"category":"Sensor","title":"Keringat atau rembesan?","question":"Apa dasar sensor LIG dapat membedakan keringat, kelembapan dressing, dan rembesan feses? Apakah ada selektivitas kimia, atau semua cairan konduktif memicu respons?","answer":"Peran LIG pada prototipe adalah indikasi kontak cairan, bukan identifikasi jenis cairan. Respons pada hidrokoloid masih perlu distabilkan. Selektivitas harus diuji dengan kontrol keringat, air, dan cairan simulasi yang komposisinya diketahui.","follow":"Apa hasil kontrol tanpa kebocoran tetapi berkeringat?","source":"Sumber 2; LA §4.1.2; Artikel keterbatasan"},{"id":23,"category":"Sensor","title":"Baseline 20 atau 60?","question":"Artikel menggunakan baseline 20 detik untuk karakterisasi dan 60 detik untuk AI. Mengapa berbeda? Apakah data yang masuk model diproses dengan cara yang sama seperti saat pelatihan?","answer":"Baseline 20 detik digunakan untuk perbandingan relatif antarkanal pada rekaman nyata. Baseline 60 sampel valid digunakan pada evaluasi model. Keduanya berbeda tujuan; jalur inferensi model harus mengikuti prapemrosesan pelatihannya agar fitur tetap sebanding.","follow":"Apa yang terjadi jika baseline diambil ketika kantong sudah berisi?","source":"Artikel akuisisi dan prapemrosesan"},{"id":24,"category":"Sensor","title":"Baterai 24 jam","question":"Dengan LiPo 1.500 mAh, Wi-Fi, SD card, dan sampling aktif, tunjukkan perhitungan serta pengukuran daya. Apakah klaim 24 jam berasal dari uji atau hanya kapasitas dibagi arus dugaan?","answer":"LA mencantumkan baterai 1.500 mAh dan menempatkan penggunaan lebih dari 24 jam sebagai arah peningkatan. Durasi nyata memerlukan pengukuran arus rata-rata pada siklus kerja sebenarnya, rugi regulator, serta kapasitas efektif baterai. Angka 1.500 mAh sendiri tidak membuktikan 24 jam.","follow":"Berapa arus saat transmisi, idle, logging, dan peringatan?","source":"LA lampiran anggaran dan §5.2; Sumber 2"},{"id":25,"category":"Sensor","title":"TP4056 bukan seluruh proteksi","question":"Kalian menggunakan TP4056 dan LiPo di wearable. Apa bukti perlindungan terhadap short circuit, overdischarge, dan pemanasan? Apakah semua proteksi itu otomatis ada karena memakai modul charger?","answer":"Fungsi pengisian dan fungsi proteksi perlu diperiksa pada rangkaian serta varian modul yang benar-benar dipasang. Nama TP4056 tidak cukup membuktikan seluruh proteksi. Jawaban harus merujuk skematik, komponen proteksi, dan pengujian termal perangkat.","follow":"Tunjukkan jalur proteksi dan aturan penggunaan saat pengisian daya.","source":"PPT hardware; LA komponen; pertanyaan audit rancangan"},{"id":26,"category":"Sensor","title":"Paritas bukan deployment","question":"Anda punya 38/38 keluaran C++ yang sama dengan Python. Mengapa itu dianggap bukti AI berjalan pada ESP32-S3? Apakah ada log board, penggunaan RAM, dan waktu inferensi?","answer":"Paritas 38/38 membuktikan kesamaan kelas pada vektor yang diuji di komputer, termasuk kelas yang salah terhadap label. Bukti deployment pada ESP32-S3 adalah pengujian terpisah yang harus menunjukkan input sensor, keluaran inferensi, dan waktu eksekusi pada board.","follow":"Apakah 100% paritas berarti akurasi 100%? Jelaskan dengan dua kesalahan Monitor.","source":"LA §4.1.3; Artikel pemeriksaan implementasi"},{"id":27,"category":"Medis","title":"Dua pasien membuktikan apa?","question":"Hanya dua pasien dan tidak ada akurasi klasifikasi nyata. Atas dasar apa slide menyebut validasi klinis serta pencegahan komplikasi? Apa outcome yang benar-benar diukur?","answer":"Uji dua pasien mendukung keterlaksanaan pemakaian dan observasi fungsi. Evaluasi itu tidak mengukur penurunan komplikasi atau akurasi klinis. Manfaat pencegahan merupakan tujuan pengembangan yang perlu diuji dengan outcome dan periode pengamatan yang sesuai.","follow":"Apa perbedaan ethical clearance, uji fungsi, dan bukti efektivitas?","source":"PPT slide 9 dan 27; LA §3.4 dan kesimpulan; Sumber 2"},{"id":28,"category":"Medis","title":"Terlambat sebelum iritasi","question":"Jika kulit sudah terpapar sebelum notifikasi, apa manfaat alat? Jangan menjawab bahwa dua menit pasti aman. Di mana bukti peringatan datang sebelum cairan mengenai kulit?","answer":"Tujuannya membantu pengguna bertindak lebih dini. Bukti waktunya harus membandingkan timestamp peringatan dengan kontak cairan yang terverifikasi. Jendela 120 detik bukan batas aman medis. Jalur kontak cairan dan penilaian risiko perlu diuji terpisah sesuai fungsi masing-masing.","follow":"Berapa lead time median dan berapa kejadian yang peringatannya terlambat?","source":"LA pengujian dan batas validasi; WOCN Peristomal Skin Assessment Guide"},{"id":29,"category":"Medis","title":"Mencegah apa?","question":"Alat tidak memperbaiki perekat dan tidak menutup lubang kebocoran. Mengapa kesimpulan PPT mengatakan mencegah kebocoran? Apakah Anda menyamakan deteksi, peringatan, dan pencegahan?","answer":"Kontribusi langsung alat adalah pemantauan dan peringatan untuk mendukung tindakan pengguna. Pengurangan kejadian kebocoran atau komplikasi adalah manfaat yang harus dibuktikan terpisah. Redaksi yang tepat menghubungkan peringatan dengan kesempatan bertindak, bukan menjamin kebocoran tidak terjadi.","follow":"Jika pengguna mengabaikan notifikasi, apakah alat masih mencegah kebocoran?","source":"PPT tujuan dan kesimpulan; LA §1.3; Sumber 1"},{"id":30,"category":"Medis","title":"Statistik tidak seragam","question":"PPT menyebut kebocoran 38,8%, sementara LA menyebut lebih dari 50%. Apakah Anda memilih angka yang paling dramatis? Apakah populasi, definisi kebocoran, dan periode pengamatannya sama?","answer":"Angka dari sumber berbeda harus disajikan bersama populasi, definisi, dan waktunya. Keduanya tidak boleh dianggap estimasi identik atau digabung tanpa pemeriksaan artikel asli. Jawaban yang kuat menjelaskan perbedaan konteks, bukan memilih persentase yang lebih besar.","follow":"Tunjukkan tabel sumber dan denominator masing-masing angka.","source":"PPT slide 2; LA §1.1–2.1; Sumber 1; sumber primer perlu diperiksa"},{"id":31,"category":"Medis","title":"Generalisasi jenis stoma","question":"Apakah hasil pada kolostomi berlaku untuk ileostomi dan urostomi? Mengapa data keluaran ileostomi dipakai untuk membenarkan desain kantong kolostomi?","answer":"Jenis stoma memiliki karakter keluaran dan kebutuhan pemakaian berbeda. Cakupan utama prototipe yang dibahas adalah kolostomi. Pemakaian pada jenis lain membutuhkan pengujian serta kalibrasi tersendiri; angka keluaran dari jenis lain hanya konteks, bukan validasi alat.","follow":"Sebutkan kriteria inklusi dan jenis stoma pada dua pasien uji.","source":"LA tujuan; Artikel protokol; Sumber 1"},{"id":32,"category":"Medis","title":"Persetujuan etik bukan sertifikat","question":"Anda menampilkan ethical clearance. Apakah itu menjamin alat aman dan efektif? Apa ruang lingkup persetujuan, persetujuan pasien, dan kriteria menghentikan pemakaian?","answer":"Ethical clearance mendukung kelayakan etik protokol yang disetujui, bukan sertifikat efektivitas atau izin edar alat. Ruang lingkup tindakan, persetujuan pasien, pemantauan keluhan, dan penghentian pemakaian harus dijelaskan berdasarkan dokumen protokol yang berlaku.","follow":"Apakah perubahan perangkat atau prosedur setelah persetujuan masih termasuk cakupannya?","source":"LA §3.4; PPT dokumentasi; rincian protokol perlu ditunjukkan"},{"id":33,"category":"Medis","title":"Rasa aman yang keliru","question":"Sumber jawaban Anda mengatakan kegagalan alarm hanya membuat pasien kembali seperti tanpa alat. Bagaimana jika justru pasien berhenti mengecek karena percaya label Safe?","answer":"Rasa aman yang keliru adalah risiko tambahan, sehingga kegagalan tidak otomatis setara dengan kondisi tanpa alat. Status Safe perlu dijelaskan sebagai keluaran model pada data valid, disertai indikator sensor dan koneksi. Evaluasi pemakaian harus menilai pemahaman dan perubahan perilaku pengguna.","follow":"Bagaimana membuktikan pengguna memahami keterbatasan Safe?","source":"Sumber 1; LA §4.1.4; pertanyaan evaluasi pengguna"},{"id":34,"category":"Medis","title":"Alarm dan kecemasan","question":"Anda menjanjikan kualitas hidup lebih baik, tetapi notifikasi salah bisa meningkatkan kecemasan. Apakah ada ukuran beban notifikasi, kenyamanan, atau kualitas hidup sebelum dan sesudah?","answer":"Dampak psikologis merupakan outcome yang perlu diukur, bukan disimpulkan dari keberadaan aplikasi. Evaluasi perlu mencatat frekuensi notifikasi, tindakan pengguna, keluhan, serta instrumen pengalaman pengguna yang sesuai. Uji fungsi dua pasien tidak cukup untuk menyatakan kualitas hidup meningkat.","follow":"Apa target yang membuat sistem dinilai tidak membebani pengguna?","source":"PPT manfaat; LA pengujian; Sumber 2"},{"id":35,"category":"Ergonomi","title":"Ukuran bukan kenyamanan","question":"Casing 83,5 × 54 × 24 mm disebut ergonomis. Di mana data berat total, tekanan sabuk, waktu pemasangan, serta kenyamanan ketika tidur miring dan duduk?","answer":"Dimensi menunjukkan ukuran, sementara ergonomi membutuhkan evaluasi pemakaian. Sabuk ditujukan untuk menopang modul agar tidak membebani kantong. Klaim kenyamanan perlu ditopang pengukuran berat, tekanan atau keluhan, serta tugas penggunaan pada beberapa posisi.","follow":"Bagaimana ukuran dan ketegangan sabuk disesuaikan antarpengguna?","source":"Artikel fabrikasi; PPT slide 5; Sumber 1–2"},{"id":36,"category":"Ergonomi","title":"Lansia dan konektor","question":"Bisakah pasien lansia dengan penglihatan atau ketangkasan tangan terbatas memasang JST, menyalakan alat, dan memahami status tanpa bantuan? Berapa kesalahan pemasangannya?","answer":"Kemudahan pemakaian perlu dinilai melalui tugas pemasangan dan pelepasan, bukan hanya tampilan alat. LA menempatkan konektor ramah lansia sebagai arah penyempurnaan. Bukti yang diperlukan adalah waktu tugas, kebutuhan bantuan, serta salah sambung atau gagal operasi.","follow":"Apa perubahan desain yang langsung mengurangi kesalahan pengguna?","source":"LA §5.2; Artikel casing; Sumber 2"},{"id":37,"category":"Ergonomi","title":"Kantong dikosongkan","question":"Bagaimana pasien mengosongkan kantong tanpa merusak sensor dan baseline? Apakah setiap penurunan isi dianggap anomali atau membutuhkan reset?","answer":"Kantong prototipe dapat dikosongkan melalui bukaan bawah tanpa melepas baseplate. Pengosongan mengubah sinyal sehingga perlu diuji terhadap aturan baseline dan keluaran AI. Kemudahan mekanis pengosongan belum dengan sendirinya membuktikan model menangani perubahan itu dengan benar.","follow":"Tunjukkan rekaman satu siklus isi–kosong–isi berikut status modelnya.","source":"LA §3.4 dan §4.1.1; Sumber 1"},{"id":38,"category":"Ergonomi","title":"Air dan pembersihan","question":"Casing di luar kantong tetap bisa terkena cairan atau percikan saat dibersihkan. Bagaimana Anda menjamin konektor dan celah cetak 3D aman? Apa bukti ketahanan disinfeksi?","answer":"Penempatan eksternal mengurangi kemungkinan paparan langsung, tetapi tidak membuktikan kedap air atau tahan disinfeksi. Prosedur pembersihan harus sesuai material dan diuji berulang. Jangan menjanjikan autoklaf atau peringkat IP tanpa pengujian perangkat.","follow":"Komponen mana yang boleh dibersihkan, dilepas, atau harus diganti setelah terkontaminasi?","source":"Artikel casing; Sumber 1–2"},{"id":39,"category":"Ergonomi","title":"Refill dan pemakaian ulang","question":"Mana bagian sekali pakai dan mana yang digunakan ulang? Apakah elektroda yang dibersihkan tetap memiliki karakteristik sama, atau harga refill menyembunyikan penurunan kinerja?","answer":"Modul elektronik direncanakan untuk digunakan ulang, sementara bagian sensor atau dressing mengikuti rancangan penggantian. Batas siklus pakai elektroda perlu ditetapkan berdasarkan kebersihan dan perubahan respons. Jawaban harus merujuk prosedur nyata, bukan mengasumsikan semua sensor bisa dicuci berulang.","follow":"Berapa siklus pembersihan yang sudah diuji dan berapa perubahan baseline-nya?","source":"Sumber 1; LA prototipe; detail siklus perlu bukti"},{"id":40,"category":"Ergonomi","title":"Tidur dan notifikasi","question":"Jika pasien tidur, ponsel silent, atau aplikasi ditutup, bagaimana peringatan diterima? Apakah hanya notifikasi aplikasi, padahal PPT juga menunjukkan buzzer?","answer":"PPT menampilkan buzzer dan aplikasi sebagai bagian rancangan. Saluran yang benar-benar aktif perlu diperiksa melalui demonstrasi, termasuk saat ponsel terkunci atau koneksi putus. Tidak tepat menjanjikan pengguna pasti terbangun hanya karena notifikasi dikirim.","follow":"Uji pada mode silent dan aplikasi di latar belakang; apa yang benar-benar muncul?","source":"PPT slide 8, 10–11; LA antarmuka; koreksi jawaban percakapan"},{"id":41,"category":"Ergonomi","title":"Kenyamanan versus adhesi","question":"Lapisan tambahan dan kabel bisa mengubah kontur atau menarik baseplate. Apa bukti sensor tidak justru memperbesar risiko terlepas dan kebocoran?","answer":"Desain tipis dan penyangga sabuk ditujukan untuk mengurangi gangguan mekanis. Dampak aktual perlu dibandingkan dengan kantong tanpa sensor pada gerak dan durasi pemakaian yang setara. Klaim tidak mengganggu adhesi harus ditopang pengamatan atau pengujian tersebut.","follow":"Apakah lokasi kabel dan tarikan saat duduk sudah diuji?","source":"PPT ergonomis; Artikel fabrikasi; Sumber 1"},{"id":42,"category":"Ergonomi","title":"Internet dan biaya pengguna","question":"Pengguna harus membawa ponsel, mengisi baterai, dan menyediakan koneksi. Apa manfaatnya jika beban perawatan justru bertambah? Apakah semua pasien membutuhkan dashboard jarak jauh?","answer":"Nilai IoT terletak pada akses informasi dan riwayat bagi pengguna atau pendamping yang membutuhkan. Manfaat harus dibandingkan dengan beban pengisian, koneksi, serta pengoperasian. Sasaran pengguna dan alur tanpa koneksi perlu dinyatakan jelas; dashboard bukan manfaat otomatis bagi semua pasien.","follow":"Berapa langkah tambahan per hari dibandingkan perawatan biasa?","source":"PPT skema penggunaan; LA antarmuka; Sumber 1"},{"id":43,"category":"Material","title":"Benarkah grafena?","question":"Lapisan hitam setelah dilaser tidak otomatis grafena. Apa bukti material kalian benar-benar LIG: Raman, morfologi, atau pengukuran lain? Apakah konduktivitas saja cukup?","answer":"Konduktivitas menunjukkan kemampuan menghantarkan listrik, tetapi tidak cukup untuk memastikan struktur grafena. Identifikasi material harus mengikuti karakterisasi yang benar-benar tersedia. Tanpa hasil tersebut, sebutkan metode fabrikasi dan batas karakterisasinya secara tepat, bukan mengklaim kemurnian atau kualitas material.","follow":"Tunjukkan data karakterisasi sampel buatan kalian, bukan gambar dari jurnal.","source":"LA §2.2 dan §3.3.1; Artikel fabrikasi; pertanyaan reviewer material"},{"id":44,"category":"Material","title":"Resep fabrikasi","question":"Sebutkan prekursor, jenis laser, daya, kecepatan pindai, fokus, dan jumlah lintasan. Bagaimana tim lain mereproduksi sensor jika hanya ditulis fabrikasi laser?","answer":"Reproduksibilitas memerlukan parameter proses dan identitas bahan yang dicatat saat fabrikasi. Dokumen yang diperiksa belum memberikan seluruh resep tersebut. Angka harus diambil dari log atau operator fabrikasi; tidak boleh diisi dengan parameter umum dari material lain.","follow":"Parameter mana yang paling memengaruhi resistansi dan berapa toleransi antarbatch?","source":"LA alat dan bahan; Artikel fabrikasi"},{"id":45,"category":"Material","title":"Poliester itu konduktor?","question":"Anda menyebut elektroda poliester. Poliester berfungsi sebagai substrat atau konduktor? Apa bahan penghantar sebenarnya, ketebalan lapisan, dan metode penyambungannya?","answer":"Istilah poliester menjelaskan bahan dasar, tetapi struktur elektroda perlu menyebut lapisan penghantar atau konstruksi komposit yang digunakan. Identitas harus diperiksa dari spesifikasi bahan dan fabrikasi. Jangan menganggap serat poliester biasa otomatis menjadi elektroda konduktif.","follow":"Tunjukkan penampang lapisan dan ukur resistansi jalur elektrodanya.","source":"LA §2.2; Artikel fabrikasi; Sumber 1"},{"id":46,"category":"Material","title":"Air mineral mewakili feses?","question":"Air mineral relatif encer dan homogen. Bagaimana Anda menerjemahkan hasilnya ke feses dengan variasi viskositas, padatan, garam, dan gas? Apa variabel pengganggu terbesarnya?","answer":"Air mineral digunakan untuk pengujian respons awal terhadap cairan. Hasil itu tidak otomatis mewakili seluruh variasi keluaran stoma. Pengujian lanjutan perlu memvariasikan sifat cairan secara terkendali agar pengaruh viskositas, konduktivitas, dan komposisi dapat dipisahkan.","follow":"Bagaimana merancang cairan simulasi yang sifatnya diukur, bukan sekadar tampak mirip?","source":"LA §3.4; Artikel pengujian; POV teknologi pertanian"},{"id":47,"category":"Material","title":"Hidrokoloid melindungi sekaligus mengganggu","question":"Jika hidrokoloid menyerap cairan dan mengubah kontak elektroda, mengapa digunakan sebagai lapisan sensor? Bagaimana menyeimbangkan perlindungan kulit dengan waktu tanggap?","answer":"Hidrokoloid merupakan bagian konfigurasi antarmuka, tetapi respons resistif pada konfigurasi tersebut masih kurang konsisten. Ketebalan, penempatan, dan bukaan kontak perlu diuji sebagai variabel desain. Manfaat lapisan tidak menghapus kebutuhan mengukur waktu tanggap serta kestabilan sensor.","follow":"Bandingkan elektroda tanpa lapisan, berlapis penuh, dan dengan bukaan terkontrol.","source":"LA §4.1.2; Sumber 1–2"},{"id":48,"category":"Material","title":"Bukan selalu hambatan turun","question":"Sumber jawaban mengatakan cairan pasti menurunkan resistansi LIG secara drastis. Apakah arah respons tersebut diukur pada konfigurasi kalian? Bagaimana kontak, pembengkakan lapisan, dan geometri memengaruhinya?","answer":"Arah serta besar perubahan harus dijelaskan dari rangkaian dan data aktual. Pernyataan hambatan pasti turun tidak boleh digeneralisasi untuk semua konfigurasi LIG berlapis. LA justru melaporkan respons resistif yang belum konsisten, sehingga mekanismenya perlu diuji terpisah.","follow":"Apakah angka yang diplot adalah resistansi dalam ohm atau pembacaan mentah rangkaian?","source":"Sumber 1; LA §4.1.2; Artikel respons sensor"},{"id":49,"category":"Material","title":"Biofouling dan umur sensor","question":"Setelah terpapar cairan, apakah residu protein, garam, dan kotoran mengubah permukaan sensor? Bagaimana membedakan kenaikan sinyal karena cairan baru dari perubahan permanen akibat pemakaian?","answer":"Drift dan pemulihan respons perlu dinilai melalui siklus basah–kering serta pembersihan yang terkontrol. Sensor layak dipakai ulang hanya jika respons dan kebersihannya memenuhi kriteria yang ditetapkan. Data umur pakai tidak boleh digantikan oleh asumsi bahwa lapisan tampak bersih.","follow":"Apa kriteria sensor harus diganti meskipun masih menghantarkan listrik?","source":"Sumber 1; LA §5.2; pertanyaan reviewer proses"},{"id":50,"category":"Material","title":"Biokompatibel dari mana?","question":"LIG di literatur disebut biokompatibel. Apakah itu cukup untuk sensor kalian yang dibuat dengan proses, perekat, dan lapisan berbeda? Bagaimana residu fabrikasi dan pelepasan partikel diperiksa?","answer":"Sifat bahan dalam literatur tidak otomatis menjadi bukti keamanan perangkat akhir. Penilaian perlu mencakup material, proses, konfigurasi kontak, dan durasi pemakaian yang sebenarnya. Bukti pengujian produk harus dibedakan dari rujukan tentang bahan.","follow":"Apa saja material yang benar-benar kontak langsung atau tidak langsung dengan kulit?","source":"LA §2.2; Sumber 1; pertanyaan audit material"},{"id":51,"category":"Material","title":"Skala produksi dan reject","question":"Kalau diproduksi seratus sensor, apa kriteria penerimaannya? Bagaimana menjaga keseragaman jalur laser, resistansi awal, adhesi, dan respons setelah ditekuk?","answer":"Produksi berulang memerlukan spesifikasi bahan, parameter proses, pemeriksaan dimensi, respons listrik, serta batas lulus yang ditetapkan dari pengujian. Rencana produksi massal harus disertai estimasi yield dan biaya sensor yang ditolak. Satu prototipe bekerja tidak membuktikan konsistensi produksi.","follow":"Berapa variasi antarunit yang bisa ditoleransi tanpa melatih ulang model?","source":"PPT roadmap 2028; LA §5.2; POV teknologi pertanian"},{"id":52,"category":"Luaran","title":"Selesai atau pengembangan terus?","question":"Setiap kritik dijawab dengan rencana pengembangan. Apa yang benar-benar selesai pada periode PKM, dan apa yang masih target? Bagaimana Anda mempertanggungjawabkan tulisan fungsional 100%?","answer":"Capaian yang dapat ditunjukkan mencakup prototipe, akuisisi sensor, antarmuka, evaluasi komputasional, dan uji pemakaian terbatas. Persentase 100% harus dikaitkan dengan daftar target dan kriteria penerimaan tertentu. Keberadaan prototipe tidak otomatis membuktikan semua klaim kinerja atau kesiapan klinis.","follow":"Buka matriks target–bukti–status; mana yang lulus pengujian sesuai definisinya?","source":"PPT slide 27; LA hasil dan kesimpulan; Sumber 2"},{"id":53,"category":"Luaran","title":"Kenapa berhenti 2028?","question":"Roadmap berhenti pada tahun kalian lulus. Apakah keberlanjutan alat bergantung pada status mahasiswa? Siapa yang merawat sistem, sensor, dan data setelah 2028?","answer":"Roadmap sampai 2028 merupakan horizon rencana rinci tim. Keberlanjutan membutuhkan pemilik operasional, dokumentasi, pembiayaan, dan mekanisme serah terima. Mitra yang masih calon harus disebut rencana, bukan komitmen yang sudah ada.","follow":"Siapa penanggung jawab setelah tim lulus dan bukti kesediaannya apa?","source":"PPT roadmap; Sumber 1; latihan percakapan"},{"id":54,"category":"Luaran","title":"Iklan versus pengujian","question":"Lampiran LA memuat dua pos Instagram Ads masing-masing Rp500.000. Mengapa uang itu dipakai untuk iklan sementara validasi sensor masih terbatas? Tunjukkan sumber dana dan hasil setiap pos.","answer":"Dua pos tersebut harus direkonsiliasi dengan kelompok dana, bukti pembayaran, serta tujuan kegiatannya. Diseminasi dapat memiliki tujuan tersendiri, tetapi kepatuhan dan kewajarannya harus dinilai terhadap pedoman yang berlaku. Jangan mengklaim seluruh alokasi pasti sah tanpa pemeriksaan dokumen.","follow":"Apakah kedua pos merupakan transaksi berbeda, duplikasi, atau sumber dana berbeda?","source":"LA Lampiran 1; Sumber 2; pedoman dan bukti transaksi perlu diperiksa"},{"id":55,"category":"Luaran","title":"Kebaruan bukan nama panjang","question":"ESP32, kapasitif, LIG, dan OLR sudah dikenal. Apa kontribusi orisinal yang dapat ditunjukkan selain menggabungkan istilah edge-native ordinal intelligence?","answer":"Kontribusi yang dibahas adalah integrasi penginderaan, pengolahan ordinal, serta antarmuka pada prototipe ostomi. Kebaruan harus dijelaskan terhadap pembanding dengan ruang lingkup yang spesifik. Klaim material baru atau superioritas klinis membutuhkan bukti tersendiri.","follow":"Apa satu eksperimen yang menunjukkan manfaat integrasi dibandingkan komponen terpisah?","source":"LA §1.1 dan §4.2; Artikel pendahuluan; Sumber 2"},{"id":56,"category":"Luaran","title":"Harga yang sebanding?","question":"PPT membandingkan paket awal Rp280.000 dengan perangkat impor. Apakah harga itu termasuk sensor, baterai, casing, tenaga kerja, cloud, dan penggantian berkala? Apakah unit pembandingnya sama?","answer":"Harga pada slide perlu disebut estimasi dan disertai rincian BOM serta biaya operasional. Perbandingan harus memakai isi paket, masa pakai, serta biaya refill yang setara. Tanpa itu, angka murah belum menunjukkan total biaya pemakaian lebih rendah.","follow":"Hitung biaya pemakaian per bulan dengan asumsi penggantian yang jelas.","source":"PPT slide 8; Sumber 1; bukti BOM perlu dilengkapi"},{"id":57,"category":"Luaran","title":"Grafik stabil yang menyesatkan?","question":"PPT menyatakan accuracy dan F1 berhimpit sehingga model sangat stabil. Mengapa kemiripan dua metrik membuktikan stabilitas? Bukankah Macro F1 0,9529 berbeda dari akurasi 0,9474?","answer":"Kemiripan metrik tidak membuktikan kestabilan model. Angka yang dilaporkan harus dibedakan: akurasi 94,74% dan Macro F1 95,29%. Kestabilan perlu dinilai melalui perubahan hasil pada pengulangan atau variasi data yang relevan.","follow":"Apakah kurva itu membandingkan metrik, iterasi optimisasi, atau hasil uji independen?","source":"PPT slide 17; LA kesimpulan; Artikel hasil"},{"id":58,"category":"Luaran","title":"Hampel 8%, accelerometer 1%?","question":"Catatan latihan menyebut false window turun dari 30% menjadi 8% dengan Hampel dan di bawah 1% dengan accelerometer. Di mana dataset, kode, dan hasil pengujiannya? Apakah sensor gerak sudah dipasang?","answer":"Angka tersebut ada pada bahan latihan, tetapi bukti pengujiannya tidak ditemukan pada dokumen dan kode yang ditinjau. Karena itu angka itu tidak digunakan sebagai capaian. Accelerometer dapat dijelaskan sebagai rencana yang manfaatnya akan diukur, bukan hasil terverifikasi.","follow":"Hapus angkanya atau tunjukkan metode dan keluaran eksperimen yang dapat direproduksi.","source":"Sumber 1; tidak terkonfirmasi pada LA/Artikel yang ditinjau"},{"id":59,"category":"Luaran","title":"Artikel, slide, dan alat","question":"Artikel menyebut inferensi berlangsung di ESP32-S3, tetapi bagian verifikasi hanya menunjukkan uji di komputer. Mana bukti yang harus dipercaya reviewer? Apakah desain ditulis sebagai hasil?","answer":"Bukti perlu dipisahkan menurut lapisan: kode inferensi, paritas komputer, dan eksekusi pada board. Pernyataan implementasi perangkat harus didukung log atau demonstrasi perangkat. Bila bukti yang tersedia hanya sisi-host, redaksi hasil harus dibatasi pada cakupan tersebut.","follow":"Tunjukkan build firmware, versi model, dan satu log inferensi board yang saling cocok.","source":"Artikel komunikasi dan pemeriksaan implementasi; LA §4.1.3"},{"id":60,"category":"Luaran","title":"Hak cipta bukan paten","question":"PPT menampilkan HKI. Apakah pencatatan program komputer membuktikan kebaruan teknis sensor, efektivitas medis, atau izin penjualan alat?","answer":"Pencatatan program komputer melindungi karya dalam ruang lingkupnya. Hal itu terpisah dari pembuktian kebaruan teknis, kinerja alat, dan persyaratan pemanfaatan komersial. Jenis perlindungan harus disebut sesuai dokumen yang dimiliki.","follow":"Apa objek yang tercatat: program, desain, atau invensi? Jangan menyebut semuanya paten.","source":"LA §4.2; PPT dokumentasi HKI"},{"id":61,"category":"Luaran","title":"Keamanan data pasien","question":"Dashboard menampilkan data pengguna. Siapa yang boleh melihatnya, bagaimana pasien dipisahkan, dan apa yang terjadi jika akun atau perangkat berpindah tangan? Apakah login saja cukup?","answer":"Keamanan perlu dibuktikan pada autentikasi, otorisasi per pengguna, pengiriman, penyimpanan, serta penghapusan data. Nama Supabase atau keberadaan login tidak otomatis menjamin isolasi pasien. Jawaban harus menunjukkan aturan akses dan hasil uji yang benar-benar tersedia.","follow":"Bisakah satu akun membaca data pasien lain dengan mengganti ID permintaan?","source":"LA antarmuka; Artikel komunikasi; pertanyaan audit IoT"}];
+    const categories = [
+      { id:'AI', label:'AI', short:'AI', color:'#285ce5', fill:'#dce7ff' },
+      { id:'Kendali', label:'Kendali', short:'Kendali', color:'#327d94', fill:'#d8ecf2' },
+      { id:'Sensor', label:'Elektronika & sensor', short:'Sensor', color:'#6157a1', fill:'#e5e1f4' },
+      { id:'Medis', label:'Medis', short:'Medis', color:'#2f827c', fill:'#d6ece6' },
+      { id:'Ergonomi', label:'Ergonomi', short:'Ergonomi', color:'#a25b3b', fill:'#f5e0d5' },
+      { id:'Material', label:'Komponen, kimia & proses', short:'Material', color:'#8b7031', fill:'#f4eacb' },
+      { id:'Luaran', label:'Luaran & PKM', short:'Luaran', color:'#9d557b', fill:'#f0dfeb' }
+    ];
+    const $ = id => document.getElementById(id);
+    const storageKey = 'ostosense-reviewer-session-v1';
+    const validIds = new Set(questions.map(q => q.id));
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch {}
+    let seen = new Set(Array.isArray(saved.seen) ? saved.seen.filter(id => validIds.has(id)) : []);
+    let category = categories.some(c => c.id === saved.category) ? saved.category : 'all';
+    let selected = questions.find(q => q.id === saved.selected) || null;
+    let spinning = false, rotation = 0, secondsLeft = 0, timerInterval = null, timerEnd = 0;
+    const savedDuration = ['0','60','90','120'].includes(saved.duration) ? saved.duration : '90';
+    $('duration').value = savedDuration;
+    const escapeHtml = text => String(text).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    const categoryInfo = id => categories.find(c => c.id === id);
+    const eligible = () => questions.filter(q => category === 'all' || q.category === category);
+    const remaining = () => eligible().filter(q => !seen.has(q.id));
+    function save() {
+      try { localStorage.setItem(storageKey, JSON.stringify({ seen:[...seen], category, selected:selected?.id || null, duration:$('duration').value })); } catch {}
+    }
+    function announce(text) { $('announcement').textContent = text; }
+    function createWheel() {
+      const step = 360 / categories.length;
+      const point = angle => [160 + 153 * Math.cos(angle * Math.PI / 180), 160 + 153 * Math.sin(angle * Math.PI / 180)];
+      $('wheel-disk').innerHTML = categories.map((c,i) => {
+        const start = -90 + i * step, end = start + step;
+        const a = point(start), b = point(end), middle = start + step / 2;
+        const x = 160 + 108 * Math.cos(middle * Math.PI / 180), y = 160 + 108 * Math.sin(middle * Math.PI / 180);
+        return `<path d="M160 160 L${a[0]} ${a[1]} A153 153 0 0 1 ${b[0]} ${b[1]} Z" fill="${c.fill}" stroke="white" stroke-width="2"/><text x="${x}" y="${y}" fill="${c.color}" font-family="Segoe UI, sans-serif" font-size="12" font-weight="650" text-anchor="middle" dominant-baseline="middle" transform="rotate(${middle + 90},${x},${y})">${c.short}</text>`;
+      }).join('');
+    }
+    function renderFilters() {
+      $('filters').innerHTML = [{id:'all',label:'Semua bidang',color: null}, ...categories].map(c => `<button class="filter" type="button" data-category="${c.id}" aria-pressed="${c.id === category}" ${spinning ? 'disabled' : ''}>${c.color ? `<span class="filter-dot" style="background:${c.color}"></span>` : ''}${escapeHtml(c.label)}<span class="filter-count">${questions.filter(q => c.id === 'all' || q.category === c.id).length}</span></button>`).join('');
+    }
+    function renderProgress() {
+      const left = remaining().length;
+      $('remaining').textContent = `${left} tersisa`;
+      $('progress-text').textContent = `${seen.size} / ${questions.length}`;
+      $('progress').max = questions.length;
+      $('progress').value = seen.size;
+      $('spin').disabled = spinning || left === 0;
+      $('spin-label').textContent = spinning ? 'Sedang berputar…' : left ? 'Putar pertanyaan' : 'Bidang ini selesai';
+      $('wheel-note').textContent = left ? 'Acak tanpa mengulang dalam satu sesi.' : 'Pilih bidang lain atau mulai sesi baru.';
+      $('reset').disabled = spinning || (seen.size === 0 && !selected);
+      $('duration').disabled = spinning;
+      $('search').disabled = spinning;
+    }
+    function answerMarkup(q) {
+      return `<h3>Contoh jawaban</h3><p>${escapeHtml(q.answer)}</p><div class="follow-up"><h3>Kalau reviewer mengejar lagi…</h3><p>${escapeHtml(q.follow)}</p></div><details class="evidence"><summary>Rujukan & bukti yang perlu disiapkan</summary><p>${escapeHtml(q.source)}</p></details>`;
+    }
+    function renderBank() {
+      const query = $('search').value.trim().toLocaleLowerCase('id');
+      const pool = eligible();
+      const filtered = pool.filter(q => `${q.question} ${q.answer} ${q.title} ${categoryInfo(q.category).label}`.toLocaleLowerCase('id').includes(query));
+      $('bank-count').textContent = `${pool.length} pertanyaan${category === 'all' ? ', 7 bidang' : ''}`;
+      $('search-count').textContent = `${filtered.length} hasil`;
+      $('bank-list').innerHTML = filtered.map(q => `<article class="bank-card" id="bank-question-${q.id}"><div class="bank-meta"><span class="tag" style="color:${categoryInfo(q.category).color}">${escapeHtml(categoryInfo(q.category).label)}</span><span>#${String(q.id).padStart(2,'0')}</span>${seen.has(q.id) ? '<span class="seen-label">Sudah dilatih</span>' : ''}</div><h3>${escapeHtml(q.title)}</h3><p>${escapeHtml(q.question)}</p><div class="bank-actions"><button class="answer-button" type="button" data-answer="${q.id}" aria-controls="bank-answer-${q.id}" aria-expanded="false" ${spinning ? 'disabled' : ''}>Lihat jawaban</button><button class="text-button" type="button" data-practice="${q.id}" ${spinning ? 'disabled' : ''}>Latih pertanyaan ini</button></div><div class="answer-panel" id="bank-answer-${q.id}" hidden>${answerMarkup(q)}</div></article>`).join('') || '<p class="empty-bank">Tidak ada pertanyaan yang cocok. Coba kata lain atau pilih semua bidang.</p>';
+    }
+    function stopTimer() {
+      if (timerInterval !== null) window.clearInterval(timerInterval);
+      timerInterval = null;
+      $('timer-toggle').textContent = '▶';
+      $('timer-toggle').setAttribute('aria-label', 'Lanjutkan timer');
+    }
+    function paintTimer() {
+      $('time-value').textContent = `${String(Math.floor(secondsLeft / 60)).padStart(2,'0')}:${String(secondsLeft % 60).padStart(2,'0')}`;
+      $('timer').classList.toggle('expired', secondsLeft === 0);
+      $('timer-toggle').disabled = secondsLeft === 0;
+    }
+    function resumeTimer() {
+      if (secondsLeft <= 0 || timerInterval !== null) return;
+      timerEnd = Date.now() + secondsLeft * 1000;
+      $('timer-toggle').textContent = 'Ⅱ';
+      $('timer-toggle').setAttribute('aria-label','Jeda timer');
+      timerInterval = window.setInterval(() => {
+        secondsLeft = Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
+        paintTimer();
+        if (secondsLeft === 0) { stopTimer(); announce('Waktu latihan selesai. Kamu tetap bisa melanjutkan jawaban.'); }
+      }, 250);
+    }
+    function resetTimer(start) {
+      stopTimer();
+      secondsLeft = Number($('duration').value);
+      $('timer').hidden = !selected || secondsLeft === 0;
+      paintTimer();
+      if (start && selected && secondsLeft > 0) resumeTimer();
+    }
+    function displayQuestion(startTimer = false) {
+      $('idle').hidden = Boolean(selected);
+      $('current').hidden = !selected;
+      $('answer-panel').hidden = true;
+      $('answer-panel').querySelector('details').open = false;
+      $('reveal').textContent = 'Lihat jawaban';
+      $('reveal').setAttribute('aria-expanded','false');
+      $('current-category').textContent = selected ? categoryInfo(selected.category).label : 'Siap berlatih';
+      $('current-category').style.color = selected ? categoryInfo(selected.category).color : '';
+      $('question-id').textContent = selected ? `#${String(selected.id).padStart(2,'0')}` : '';
+      if (selected) {
+        $('question-title').textContent = selected.title;
+        $('question-text').textContent = selected.question;
+        $('answer-text').textContent = selected.answer;
+        $('follow-text').textContent = selected.follow;
+        $('source-text').textContent = selected.source;
+        $('selected-note').textContent = 'Jawab dulu dengan bahasamu sendiri. Timer hanya untuk latihan.';
+      }
+      resetTimer(startTimer);
+    }
+    function chooseQuestion(q, scroll = false) {
+      selected = q;
+      seen.add(q.id);
+      save();
+      displayQuestion(true);
+      renderProgress();
+      renderBank();
+      announce(`${categoryInfo(q.category).label}. ${q.question}`);
+      if (scroll || window.innerWidth <= 750) $('stage').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block:'start' });
+    }
+    function randomIndex(maximum) {
+      if (window.crypto?.getRandomValues) {
+        const value = new Uint32Array(1), limit = Math.floor(4294967296 / maximum) * maximum;
+        do { window.crypto.getRandomValues(value); } while (value[0] >= limit);
+        return value[0] % maximum;
+      }
+      return Math.floor(Math.random() * maximum);
+    }
+    async function spin() {
+      const pool = remaining();
+      if (spinning || !pool.length) return;
+      const question = pool[randomIndex(pool.length)];
+      spinning = true;
+      stopTimer();
+      $('stage').setAttribute('aria-busy','true');
+      $('reveal').disabled = true;
+      $('timer-toggle').disabled = true;
+      renderFilters(); renderProgress(); renderBank();
+      const index = categories.findIndex(c => c.id === question.category);
+      const step = 360 / categories.length;
+      const targetAngle = (360 - (index + 0.5) * step) % 360;
+      const next = rotation + 360 * 4 + ((targetAngle - rotation % 360 + 360) % 360);
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const disk = $('wheel-disk');
+      if (!reducedMotion && disk.animate) {
+        const animation = disk.animate([{ transform:`rotate(${rotation}deg)` }, { transform:`rotate(${next}deg)` }], { duration:2100, easing:'cubic-bezier(.15,.72,.12,1)', fill:'forwards' });
+        await animation.finished;
+        rotation = next % 360;
+        disk.style.transform = `rotate(${rotation}deg)`;
+        animation.cancel();
+      } else { rotation = next % 360; disk.style.transform = `rotate(${rotation}deg)`; }
+      spinning = false;
+      $('stage').setAttribute('aria-busy','false');
+      $('reveal').disabled = false;
+      renderFilters();
+      chooseQuestion(question);
+    }
+    $('spin').addEventListener('click',spin);
+    $('filters').addEventListener('click',event => {
+      const button = event.target.closest('[data-category]');
+      if (!button || spinning) return;
+      category = button.dataset.category;
+      if (selected && category !== 'all' && selected.category !== category) selected = null;
+      $('search').value = '';
+      save(); displayQuestion(); renderFilters(); renderProgress(); renderBank();
+    });
+    $('reveal').addEventListener('click',() => {
+      if (!selected || spinning) return;
+      const opening = $('answer-panel').hidden;
+      $('answer-panel').hidden = !opening;
+      $('reveal').textContent = opening ? 'Tutup jawaban' : 'Lihat jawaban';
+      $('reveal').setAttribute('aria-expanded',String(opening));
+      if (opening) stopTimer();
+    });
+    $('bank-list').addEventListener('click',event => {
+      const answer = event.target.closest('[data-answer]'), practice = event.target.closest('[data-practice]');
+      if (spinning) return;
+      if (answer) {
+        const panel = $(`bank-answer-${answer.dataset.answer}`), opening = panel.hidden;
+        panel.hidden = !opening;
+        answer.textContent = opening ? 'Tutup jawaban' : 'Lihat jawaban';
+        answer.setAttribute('aria-expanded',String(opening));
+      }
+      if (practice) chooseQuestion(questions.find(q => q.id === Number(practice.dataset.practice)),true);
+    });
+    $('search').addEventListener('input',renderBank);
+    $('timer-toggle').addEventListener('click',() => timerInterval === null ? resumeTimer() : stopTimer());
+    $('duration').addEventListener('change',() => { save(); resetTimer(Boolean(selected && $('answer-panel').hidden)); });
+    $('reset').addEventListener('click',() => $('reset-dialog').showModal());
+    $('cancel-reset').addEventListener('click',() => $('reset-dialog').close());
+    $('confirm-reset').addEventListener('click',() => {
+      seen.clear(); selected = null;
+      $('reset-dialog').close();
+      save(); displayQuestion(); renderProgress(); renderBank();
+      $('spin').focus();
+      announce('Sesi baru dimulai. Semua pertanyaan tersedia kembali.');
+    });
+    createWheel(); renderFilters(); renderProgress(); renderBank(); displayQuestion();
+  </script>
+</body>
+</html>
